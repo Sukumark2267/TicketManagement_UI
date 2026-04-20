@@ -11,6 +11,7 @@ import {
   TextField,
   Typography
 } from '@mui/material';
+import { getApiErrorMessage } from '../utils/apiErrors';
 
 const initialState = {
   firstName: '',
@@ -39,7 +40,7 @@ const UserFormPage = ({ title, subtitle, cancelTo, submitLabel, onSubmit }) => {
       await onSubmit(form);
       navigate(cancelTo);
     } catch (submitError) {
-      setError(submitError.response?.data?.detail ?? 'Unable to save user.');
+      setError(getApiErrorMessage(submitError, 'Unable to save user.'));
     } finally {
       setSubmitting(false);
     }

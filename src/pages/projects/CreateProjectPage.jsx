@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 
 import PageLoader from '../../components/PageLoader';
+import GoogleMapsLocationField from '../../components/GoogleMapsLocationField';
 import { api } from '../../services/api';
 
 const initialState = {
@@ -24,6 +25,7 @@ const initialState = {
   name: '',
   siteName: '',
   siteAddress: '',
+  location: '',
   contactPerson: '',
   contactPhone: '',
   description: ''
@@ -111,8 +113,15 @@ const CreateProjectPage = () => {
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Contact Phone" value={form.contactPhone} onChange={handleChange('contactPhone')} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <TextField fullWidth required multiline minRows={3} label="Site Address" value={form.siteAddress} onChange={handleChange('siteAddress')} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <GoogleMapsLocationField
+                value={form.location}
+                onChange={handleChange('location')}
+                searchText={form.siteAddress}
+              />
             </Grid>
             <Grid item xs={12}>
               <TextField fullWidth multiline minRows={4} label="Description" value={form.description} onChange={handleChange('description')} />

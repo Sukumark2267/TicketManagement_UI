@@ -30,44 +30,49 @@ const base64ToBlob = (base64, contentType) => {
   return new Blob([bytes], { type: contentType });
 };
 
-const TicketPhotoUploadField = ({ photo, onChange, onDelete, onError }) => {
+const TicketPhotoUploadField = ({ photos = [], onChange, onError }) => {
   const handleFileChange = async (event) => {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files ?? []);
     event.target.value = '';
 
-    if (!file) {
+    if (!files.length) {
       return;
     }
 
     try {
-      if (!file.type.startsWith('image/')) {
-        throw new Error('Only image files are allowed for ticket photo.');
+      const nextPhotos = [...photos];
+
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) {
+          throw new Error('Only image files are allowed for ticket photos.');
+        }
+
+        if (file.size > maxPhotoSizeBytes) {
+          throw new Error('Each ticket photo size cannot exceed 5 MB.');
+        }
+
+        const dataUrl = await readFileAsDataUrl(file);
+        const base64 = String(dataUrl).split(',')[1] ?? '';
+
+        if (!base64) {
+          throw new Error('Unable to read the selected image.');
+        }
+
+        nextPhotos.push({
+          fileName: file.name,
+          contentType: file.type,
+          base64
+        });
       }
 
-      if (file.size > maxPhotoSizeBytes) {
-        throw new Error('Ticket photo size cannot exceed 5 MB.');
-      }
-
-      const dataUrl = await readFileAsDataUrl(file);
-      const base64 = String(dataUrl).split(',')[1] ?? '';
-
-      if (!base64) {
-        throw new Error('Unable to read the selected image.');
-      }
-
-      onChange({
-        fileName: file.name,
-        contentType: file.type,
-        base64
-      });
-
+      onChange(nextPhotos);
       onError?.('');
     } catch (error) {
       onError?.(error.message || 'Unable to upload the selected image.');
     }
   };
 
-  const handleView = () => {
+  const handleView = (photo) => {
     if (!photo?.base64 || !photo?.contentType) {
       return;
     }
@@ -78,49 +83,58 @@ const TicketPhotoUploadField = ({ photo, onChange, onDelete, onError }) => {
     window.setTimeout(() => URL.revokeObjectURL(previewUrl), 60000);
   };
 
+  const handleDelete = (index) => {
+    onChange(photos.filter((_, currentIndex) => currentIndex !== index));
+  };
+
   return (
     <Stack spacing={1.25}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" useFlexGap>
         <Box>
-          <Typography fontWeight={700}>Photo</Typography>
+          <Typography fontWeight={700}>Photos</Typography>
           <Typography variant="body2" color="text.secondary">
             Optional image upload for the ticket.
           </Typography>
         </Box>
         <Button component="label" variant="outlined" startIcon={<CloudUploadOutlinedIcon />}>
-          Upload Photo
-          <input hidden type="file" accept="image/*" onChange={handleFileChange} />
+          Upload Photos
+          <input hidden type="file" accept="image/*" multiple onChange={handleFileChange} />
         </Button>
       </Stack>
 
-      {photo ? (
-        <Box
-          sx={{
-            px: 1.5,
-            py: 1.2,
-            borderRadius: 2.5,
-            border: '1px solid rgba(215,227,239,0.9)',
-            backgroundColor: 'rgba(249,252,255,0.9)'
-          }}
-        >
-          <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1.5}>
-            <Typography sx={{ minWidth: 0, flex: 1 }} noWrap>
-              {photo.fileName}
-            </Typography>
-            <Stack direction="row" spacing={0.5}>
-              <Tooltip title="View">
-                <IconButton size="small" onClick={handleView} aria-label="View photo">
-                  <VisibilityOutlinedIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete">
-                <IconButton size="small" onClick={onDelete} aria-label="Delete photo">
-                  <DeleteOutlineOutlinedIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          </Stack>
-        </Box>
+      {photos.length ? (
+        <Stack spacing={1}>
+          {photos.map((photo, index) => (
+            <Box
+              key={`${photo.fileName}-${index}`}
+              sx={{
+                px: 1.5,
+                py: 1.2,
+                borderRadius: 2.5,
+                border: '1px solid rgba(215,227,239,0.9)',
+                backgroundColor: 'rgba(249,252,255,0.9)'
+              }}
+            >
+              <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1.5}>
+                <Typography sx={{ minWidth: 0, flex: 1 }} noWrap>
+                  {photo.fileName}
+                </Typography>
+                <Stack direction="row" spacing={0.5}>
+                  <Tooltip title="View">
+                    <IconButton size="small" onClick={() => handleView(photo)} aria-label="View photo">
+                      <VisibilityOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete">
+                    <IconButton size="small" onClick={() => handleDelete(index)} aria-label="Delete photo">
+                      <DeleteOutlineOutlinedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
+              </Stack>
+            </Box>
+          ))}
+        </Stack>
       ) : null}
     </Stack>
   );

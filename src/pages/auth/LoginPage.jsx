@@ -39,7 +39,9 @@ const LoginPage = () => {
       const response = await auth.login(form);
 
       const nextPath =
-        response.user.role === 'Admin'
+        response.user.mustChangePassword
+          ? '/change-password'
+          : response.user.role === 'Admin'
           ? '/dashboard/admin'
           : response.user.role === 'Technician'
             ? '/dashboard/technician'
@@ -54,14 +56,14 @@ const LoginPage = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'grid', placeItems: 'center', p: 3 }}>
-      <Card className="glass-panel" sx={{ width: 'min(1040px, 100%)', p: 2 }}>
+    <Box sx={{ minHeight: '100vh', display: 'grid', placeItems: 'center', p: { xs: 1.5, sm: 3 } }}>
+      <Card className="glass-panel" sx={{ width: 'min(1040px, 100%)', p: { xs: 1, md: 2 } }}>
         <Grid container spacing={2}>
           <Grid item xs={12} md={7}>
             <Box
               sx={{
                 height: '100%',
-                p: 4,
+                p: { xs: 2.5, md: 4 },
                 borderRadius: 4,
                 color: '#fff',
                 background: 'linear-gradient(155deg, rgba(20,91,130,0.98), rgba(47,137,184,0.92))'
@@ -72,19 +74,18 @@ const LoginPage = () => {
                 src="/images/supernal_logo.png"
                 alt="Supernal Technologies"
                 sx={{
-                  width: 'min(100%, 360px)',
+                  width: 'min(100%, 320px)',
                   height: 'auto',
                   display: 'block',
                   mb: 3,
                   backgroundColor: 'rgba(255,255,255,0.95)',
-                  borderRadius: 3,
+                  borderRadius: 10,
                   px: 1.5,
                   py: 1
                 }}
               />
-              <Typography variant="overline">Production-Style Ticket Platform</Typography>
-              <Typography variant="h3" sx={{ mt: 1, mb: 2, fontWeight: 700 }}>
-                Welcome back
+              <Typography variant="h3" sx={{ mt: 1, mb: 2, fontWeight: 700, fontSize: { xs: '2rem', md: '3rem' } }}>
+                Welcome 
               </Typography>
               <Typography sx={{ lineHeight: 1.8 }}>
                 Sign in to manage tickets, customers, technicians, dashboards
@@ -93,7 +94,7 @@ const LoginPage = () => {
           </Grid>
 
           <Grid item xs={12} md={5}>
-            <CardContent component="form" onSubmit={handleSubmit} sx={{ p: 4 }}>
+            <CardContent component="form" onSubmit={handleSubmit} sx={{ p: { xs: 2.5, md: 4 } }}>
               <Stack spacing={2}>
                 <Typography variant="h4" fontWeight={700}>
                   Login

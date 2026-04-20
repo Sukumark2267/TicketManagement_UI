@@ -14,6 +14,11 @@ export const AuthProvider = ({ children }) => {
     return response;
   };
 
+  const updateUser = (nextUser) => {
+    authStorage.updateUser(nextUser);
+    setUser(nextUser);
+  };
+
   const logout = async () => {
     await api.logout();
     setUser(null);
@@ -24,9 +29,12 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: Boolean(user),
     login,
     logout,
+    updateUser,
     hasRole: (roles) => roles.includes(user?.role),
     dashboardPath:
-      user?.role === 'Admin'
+      user?.mustChangePassword
+        ? '/change-password'
+        : user?.role === 'Admin'
         ? '/dashboard/admin'
         : user?.role === 'Technician'
           ? '/dashboard/technician'

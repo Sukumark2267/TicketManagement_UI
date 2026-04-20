@@ -59,40 +59,42 @@ const UserListPage = ({ title, subtitle, createTo, createLabel, loadUsers, toggl
 
       <Card className="glass-panel">
         <CardContent>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Username</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.firstName} {user.lastName}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.isActive ? 'Active' : 'Inactive'}</TableCell>
-                  <TableCell align="right">
-                    <Button onClick={async () => {
-                      try {
-                        setError('');
-                        await toggleStatus(user);
-                        await load();
-                      } catch (toggleError) {
-                        setError(toggleError.response?.data?.detail ?? 'Unable to update user status.');
-                      }
-                    }}>
-                      {user.isActive ? 'Deactivate' : 'Activate'}
-                    </Button>
-                  </TableCell>
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small" sx={{ minWidth: 760 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Username</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>{user.firstName} {user.lastName}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.isActive ? 'Active' : 'Inactive'}</TableCell>
+                    <TableCell align="right">
+                      <Button onClick={async () => {
+                        try {
+                          setError('');
+                          await toggleStatus(user);
+                          await load();
+                        } catch (toggleError) {
+                          setError(toggleError.response?.data?.detail ?? 'Unable to update user status.');
+                        }
+                      }}>
+                        {user.isActive ? 'Deactivate' : 'Activate'}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
           <TablePagination
             component="div"
             count={pagination.totalCount}

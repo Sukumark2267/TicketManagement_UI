@@ -90,35 +90,37 @@ const MasterCrudPage = ({ title, subtitle, service, entityName }) => {
 
       <Card className="glass-panel">
         <CardContent>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {items.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.isActive ? 'Active' : 'Inactive'}</TableCell>
-                  <TableCell align="right">
-                    <Button onClick={() => { setEditingId(item.id); setName(item.name); }}>Edit</Button>
-                    <Button color="error" onClick={async () => {
-                      try {
-                        setError('');
-                        await service.remove(item.id);
-                        await load();
-                      } catch (deleteError) {
-                        setError(deleteError.response?.data?.detail ?? `Unable to delete ${entityName.toLowerCase()}.`);
-                      }
-                    }}>Delete</Button>
-                  </TableCell>
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small" sx={{ minWidth: 560 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {items.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>{item.name}</TableCell>
+                    <TableCell>{item.isActive ? 'Active' : 'Inactive'}</TableCell>
+                    <TableCell align="right">
+                      <Button onClick={() => { setEditingId(item.id); setName(item.name); }}>Edit</Button>
+                      <Button color="error" onClick={async () => {
+                        try {
+                          setError('');
+                          await service.remove(item.id);
+                          await load();
+                        } catch (deleteError) {
+                          setError(deleteError.response?.data?.detail ?? `Unable to delete ${entityName.toLowerCase()}.`);
+                        }
+                      }}>Delete</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
           <TablePagination
             component="div"
             count={pagination.totalCount}

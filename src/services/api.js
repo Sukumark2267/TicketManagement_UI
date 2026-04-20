@@ -8,6 +8,11 @@ export const api = {
     authStorage.saveSession(data);
     return data;
   },
+  changePassword: async (payload) => {
+    const { data } = await httpClient.post('/auth/change-password', payload);
+    authStorage.updateUser(data);
+    return data;
+  },
   logout: async () => {
     const refreshToken = authStorage.getRefreshToken();
     if (refreshToken) {
@@ -52,6 +57,7 @@ export const api = {
     assigned: async (params) => (await httpClient.get(`/tickets/assigned-to-me${buildQuery(params)}`)).data,
     byId: async (id) => (await httpClient.get(`/tickets/${id}`)).data,
     photo: async (id) => (await httpClient.get(`/tickets/${id}/photo`, { responseType: 'blob' })).data,
+    photoById: async (ticketId, photoId) => (await httpClient.get(`/tickets/${ticketId}/photos/${photoId}`, { responseType: 'blob' })).data,
     update: async (id, payload) => (await httpClient.put(`/tickets/${id}`, payload)).data,
     assignTechnician: async (id, payload) => (await httpClient.put(`/tickets/${id}/assign-technician`, payload)).data,
     updateStatus: async (id, payload) => (await httpClient.put(`/tickets/${id}/status`, payload)).data

@@ -98,7 +98,6 @@ const TicketListPage = ({ mode = 'all' }) => {
     <Stack spacing={3}>
       <Box>
         <Typography className="page-title">{title}</Typography>
-        <Typography className="page-subtitle">Search, filter, and review tickets in a professional table layout.</Typography>
       </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -165,39 +164,43 @@ const TicketListPage = ({ mode = 'all' }) => {
       {loading ? <PageLoader /> : (
       <Card className="glass-panel">
         <CardContent>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Ticket No</TableCell>
-                <TableCell>Title</TableCell>
-                <TableCell>Customer</TableCell>
-                <TableCell>Project</TableCell>
-                <TableCell>Service</TableCell>
-                <TableCell>Priority</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Created</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {tickets.map((ticket) => (
-                <TableRow key={ticket.id}>
-                  <TableCell>{ticket.ticketNumber}</TableCell>
-                  <TableCell>{ticket.title}</TableCell>
-                  <TableCell>{ticket.customerName}</TableCell>
-                  <TableCell>{ticket.projectName}</TableCell>
-                  <TableCell>{ticket.serviceTypeName}</TableCell>
-                  <TableCell>{ticket.priorityName}</TableCell>
-                  <TableCell>{ticket.statusName}</TableCell>
-                  <TableCell>{new Date(ticket.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell align="right">
-                    <Button component={Link} to={`/tickets/${ticket.id}`}>View</Button>
-                    <Button component={Link} to={`/tickets/${ticket.id}/edit`}>Edit</Button>
-                  </TableCell>
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small" sx={{ minWidth: 900 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Ticket No</TableCell>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Customer</TableCell>
+                  <TableCell>Project</TableCell>
+                  <TableCell>Service</TableCell>
+                  <TableCell>Priority</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Created</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {tickets.map((ticket) => (
+                  <TableRow key={ticket.id}>
+                    <TableCell>{ticket.ticketNumber}</TableCell>
+                    <TableCell>{ticket.title}</TableCell>
+                    <TableCell>{ticket.customerName || 'NA'}</TableCell>
+                    <TableCell>{ticket.projectName || 'NA'}</TableCell>
+                    <TableCell>{ticket.serviceTypeName}</TableCell>
+                    <TableCell>{ticket.priorityName}</TableCell>
+                    <TableCell>{ticket.statusName}</TableCell>
+                    <TableCell>{new Date(ticket.createdAt).toLocaleDateString()}</TableCell>
+                    <TableCell align="right">
+                      <Stack direction="row" justifyContent="flex-end" spacing={0.5}>
+                        <Button component={Link} to={`/tickets/${ticket.id}`}>View</Button>
+                        <Button component={Link} to={`/tickets/${ticket.id}/edit`}>Edit</Button>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
           <TablePagination
             component="div"
             count={pagination.totalCount}

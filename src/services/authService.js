@@ -14,6 +14,9 @@ export const authStorage = {
     localStorage.setItem(REFRESH_KEY, response.refreshToken);
     localStorage.setItem(USER_KEY, JSON.stringify(response.user));
   },
+  updateUser: (user) => {
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  },
   clear: () => {
     localStorage.removeItem(ACCESS_KEY);
     localStorage.removeItem(REFRESH_KEY);

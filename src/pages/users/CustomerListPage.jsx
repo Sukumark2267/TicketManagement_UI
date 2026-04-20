@@ -75,44 +75,46 @@ const CustomerListPage = () => {
             sx={{ mb: 2 }}
           />
 
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Phone</TableCell>
-                <TableCell>Company</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {customers.map((customer) => (
-                <TableRow key={customer.id}>
-                  <TableCell>{customer.fullName}</TableCell>
-                  <TableCell>{customer.email}</TableCell>
-                  <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{customer.companyName || 'NA'}</TableCell>
-                  <TableCell>{customer.isActive ? 'Active' : 'Inactive'}</TableCell>
-                  <TableCell align="right">
-                    <Button
-                      onClick={async () => {
-                        try {
-                          setError('');
-                          await (customer.isActive ? api.customers.deactivate(customer.id) : api.customers.activate(customer.id));
-                          await load();
-                        } catch (toggleError) {
-                          setError(toggleError.response?.data?.detail ?? 'Unable to update customer status.');
-                        }
-                      }}
-                    >
-                      {customer.isActive ? 'Deactivate' : 'Activate'}
-                    </Button>
-                  </TableCell>
+          <Box sx={{ overflowX: 'auto' }}>
+            <Table size="small" sx={{ minWidth: 760 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Phone</TableCell>
+                  <TableCell>Company</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {customers.map((customer) => (
+                  <TableRow key={customer.id}>
+                    <TableCell>{customer.fullName}</TableCell>
+                    <TableCell>{customer.email}</TableCell>
+                    <TableCell>{customer.phone}</TableCell>
+                    <TableCell>{customer.companyName || 'NA'}</TableCell>
+                    <TableCell>{customer.isActive ? 'Active' : 'Inactive'}</TableCell>
+                    <TableCell align="right">
+                      <Button
+                        onClick={async () => {
+                          try {
+                            setError('');
+                            await (customer.isActive ? api.customers.deactivate(customer.id) : api.customers.activate(customer.id));
+                            await load();
+                          } catch (toggleError) {
+                            setError(toggleError.response?.data?.detail ?? 'Unable to update customer status.');
+                          }
+                        }}
+                      >
+                        {customer.isActive ? 'Deactivate' : 'Activate'}
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
 
           <TablePagination
             component="div"

@@ -13,14 +13,18 @@ import {
 } from '@mui/material';
 
 import { api } from '../../services/api';
+import GoogleMapsLocationField from '../../components/GoogleMapsLocationField';
+import { getApiErrorMessage } from '../../utils/apiErrors';
 
 const initialState = {
   firstName: '',
   lastName: '',
   email: '',
   phone: '',
+  password: '',
   companyName: '',
-  address: ''
+  address: '',
+  location: ''
 };
 
 const fieldConfig = [
@@ -28,6 +32,7 @@ const fieldConfig = [
   { field: 'lastName', label: 'Last Name', required: true },
   { field: 'email', label: 'Email', required: true },
   { field: 'phone', label: 'Phone', required: true },
+  { field: 'password', label: 'Password', required: true },
   { field: 'companyName', label: 'Company Name', required: false }
 ];
 
@@ -50,7 +55,7 @@ const CreateCustomerPage = () => {
       await api.customers.create(form);
       navigate('/users/customers');
     } catch (submitError) {
-      setError(submitError.response?.data?.detail ?? 'Unable to create customer.');
+      setError(getApiErrorMessage(submitError, 'Unable to create customer.'));
     } finally {
       setSubmitting(false);
     }
@@ -74,13 +79,13 @@ const CreateCustomerPage = () => {
                   fullWidth
                   required={required}
                   label={label}
-                  type={field === 'email' ? 'email' : 'text'}
+                  type={field === 'email' ? 'email' : field === 'password' ? 'password' : 'text'}
                   value={form[field]}
                   onChange={handleChange(field)}
                 />
               </Grid>
             ))}
-            <Grid item xs={12}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 multiline
@@ -88,6 +93,13 @@ const CreateCustomerPage = () => {
                 label="Address"
                 value={form.address}
                 onChange={handleChange('address')}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <GoogleMapsLocationField
+                value={form.location}
+                onChange={handleChange('location')}
+                searchText={form.address}
               />
             </Grid>
           </Grid>

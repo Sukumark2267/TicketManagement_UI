@@ -22,18 +22,15 @@ import { api } from '../../services/api';
 
 const TicketCreatePage = () => {
   const navigate = useNavigate();
-  const [lookups, setLookups] = useState({ categories: [], priorities: [], serviceTypes: [], projects: [] });
+  const [lookups, setLookups] = useState({ categories: [], priorities: [], projects: [] });
   const [form, setForm] = useState({
     title: '',
     description: '',
     projectId: '',
-    serviceTypeId: '',
     categoryId: '',
     priorityId: '',
     remarks: '',
-    photoFileName: '',
-    photoContentType: '',
-    photoBase64: ''
+    photos: []
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -43,16 +40,14 @@ const TicketCreatePage = () => {
     const load = async () => {
       try {
         setError('');
-        const [categories, priorities, serviceTypes, projects] = await Promise.all([
+        const [categories, priorities, projects] = await Promise.all([
           api.categories.list({ pageNumber: 1, pageSize: 100 }),
           api.priorities.list({ pageNumber: 1, pageSize: 100 }),
-          api.serviceTypes.list({ pageNumber: 1, pageSize: 100 }),
           api.projects.list({ pageNumber: 1, pageSize: 200 })
         ]);
         setLookups({
           categories: categories.items,
           priorities: priorities.items,
-          serviceTypes: serviceTypes.items.filter((item) => item.isActive),
           projects: projects.items.filter((item) => item.isActive)
         });
       } catch (loadError) {
@@ -69,25 +64,6 @@ const TicketCreatePage = () => {
     setForm((current) => ({ ...current, [field]: event.target.value }));
   };
 
-  const handlePhotoChange = (photo) => {
-    setForm((current) => ({
-      ...current,
-      photoFileName: photo.fileName,
-      photoContentType: photo.contentType,
-      photoBase64: photo.base64
-    }));
-    setError('');
-  };
-
-  const handlePhotoDelete = () => {
-    setForm((current) => ({
-      ...current,
-      photoFileName: '',
-      photoContentType: '',
-      photoBase64: ''
-    }));
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -97,7 +73,6 @@ const TicketCreatePage = () => {
       const ticket = await api.tickets.create({
         ...form,
         projectId: Number(form.projectId),
-        serviceTypeId: Number(form.serviceTypeId),
         categoryId: Number(form.categoryId),
         priorityId: Number(form.priorityId)
       });
@@ -117,7 +92,6 @@ const TicketCreatePage = () => {
     <Stack spacing={3}>
       <Box>
         <Typography className="page-title">Create Ticket</Typography>
-        <Typography className="page-subtitle">Customers can create tickets only for themselves and must choose the correct project site.</Typography>
       </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -125,7 +99,7 @@ const TicketCreatePage = () => {
       <Card className="glass-panel">
         <CardContent component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <FormControl fullWidth>
                 <InputLabel>Project</InputLabel>
                 <Select label="Project" value={form.projectId} onChange={handleChange('projectId')} required>
@@ -133,15 +107,7 @@ const TicketCreatePage = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Service</InputLabel>
-                <Select label="Service" value={form.serviceTypeId} onChange={handleChange('serviceTypeId')} required>
-                  {lookups.serviceTypes.map((item) => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <FormControl fullWidth>
                 <InputLabel>Category</InputLabel>
                 <Select label="Category" value={form.categoryId} onChange={handleChange('categoryId')} required>
@@ -149,7 +115,7 @@ const TicketCreatePage = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <FormControl fullWidth>
                 <InputLabel>Priority</InputLabel>
                 <Select label="Priority" value={form.priorityId} onChange={handleChange('priorityId')} required>
@@ -160,9 +126,8 @@ const TicketCreatePage = () => {
             <Grid item xs={12}><TextField fullWidth label="Title" value={form.title} onChange={handleChange('title')} required /></Grid>
             <Grid item xs={12}>
               <TicketPhotoUploadField
-                photo={form.photoBase64 ? { fileName: form.photoFileName, contentType: form.photoContentType, base64: form.photoBase64 } : null}
-                onChange={handlePhotoChange}
-                onDelete={handlePhotoDelete}
+                photos={form.photos}
+                onChange={(photos) => setForm((current) => ({ ...current, photos }))}
                 onError={setError}
               />
             </Grid>

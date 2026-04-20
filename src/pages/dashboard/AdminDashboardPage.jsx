@@ -3,7 +3,6 @@ import DashboardPageTemplate from './DashboardPageTemplate';
 const AdminDashboardPage = () => (
   <DashboardPageTemplate
     title="Admin Dashboard"
-    subtitle="Oversee tickets, customers, technicians, projects, and master data from one clean control center."
     actions={[
       { label: 'View Customers', to: '/users/customers', variant: 'contained' },
       { label: 'View Technicians', to: '/users/technicians', variant: 'outlined' },

@@ -2,8 +2,10 @@ import axios from 'axios';
 
 import { authStorage } from './authService';
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'https://api.supernal.in/api').replace(/\/$/, '');
+
 const httpClient = axios.create({
-  baseURL: '/api'
+  baseURL: API_BASE_URL
 });
 
 let refreshPromise = null;
@@ -30,7 +32,7 @@ httpClient.interceptors.response.use(
       originalRequest._retry = true;
 
       if (!refreshPromise) {
-        refreshPromise = axios.post('/api/auth/refresh-token', {
+        refreshPromise = axios.post(`${API_BASE_URL}/auth/refresh-token`, {
           accessToken: authStorage.getAccessToken(),
           refreshToken: authStorage.getRefreshToken()
         }).then((response) => {

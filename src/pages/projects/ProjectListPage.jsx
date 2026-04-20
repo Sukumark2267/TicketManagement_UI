@@ -112,30 +112,32 @@ const ProjectListPage = () => {
       {loading ? <PageLoader /> : (
         <Card className="glass-panel">
           <CardContent>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Project</TableCell>
-                  <TableCell>Customer</TableCell>
-                  <TableCell>Site</TableCell>
-                  <TableCell>Site Address</TableCell>
-                  <TableCell>Contact</TableCell>
-                  <TableCell>Created</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {projects.map((project) => (
-                  <TableRow key={project.id}>
-                    <TableCell>{project.name}</TableCell>
-                    <TableCell>{project.customerName}</TableCell>
-                    <TableCell>{project.siteName}</TableCell>
-                    <TableCell>{project.siteAddress}</TableCell>
-                    <TableCell>{project.contactPerson || 'NA'}{project.contactPhone ? ` (${project.contactPhone})` : ''}</TableCell>
-                    <TableCell>{new Date(project.createdAt).toLocaleDateString()}</TableCell>
+            <Box sx={{ overflowX: 'auto' }}>
+              <Table size="small" sx={{ minWidth: 880 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Project</TableCell>
+                    <TableCell>Customer</TableCell>
+                    <TableCell>Site</TableCell>
+                    <TableCell>Site Address</TableCell>
+                    <TableCell>Contact</TableCell>
+                    <TableCell>Created</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {projects.map((project) => (
+                    <TableRow key={project.id}>
+                      <TableCell>{project.name}</TableCell>
+                      <TableCell>{project.customerName}</TableCell>
+                      <TableCell>{project.siteName}</TableCell>
+                      <TableCell>{project.siteAddress}</TableCell>
+                      <TableCell>{project.contactPerson || 'NA'}{project.contactPhone ? ` (${project.contactPhone})` : ''}</TableCell>
+                      <TableCell>{new Date(project.createdAt).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
             <TablePagination
               component="div"
               count={pagination.totalCount}

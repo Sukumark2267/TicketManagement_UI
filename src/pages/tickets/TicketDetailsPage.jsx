@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
   Alert,
@@ -39,10 +39,24 @@ const TicketDetailsPage = () => {
     void load();
   }, [id]);
 
-  const handleViewPhoto = async () => {
+  const ticketPhotos = useMemo(() => {
+    if (!ticket) {
+      return [];
+    }
+
+    if (ticket.photos?.length) {
+      return ticket.photos;
+    }
+
+    return ticket.hasPhoto ? [{ id: 0, fileName: 'Ticket Photo' }] : [];
+  }, [ticket]);
+
+  const handleViewPhoto = async (photo) => {
     try {
       setError('');
-      const blob = await api.tickets.photo(id);
+      const blob = photo.id
+        ? await api.tickets.photoById(id, photo.id)
+        : await api.tickets.photo(id);
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank', 'noopener,noreferrer');
       window.setTimeout(() => URL.revokeObjectURL(url), 60000);
@@ -65,7 +79,7 @@ const TicketDetailsPage = () => {
         <Box>
           <Typography className="page-title">{ticket.ticketNumber} - {ticket.title}</Typography>
           <Typography className="page-subtitle">
-            Customer: {ticket.customerName} | Project: {ticket.projectName} | Service: {ticket.serviceTypeName}
+            Customer: {ticket.customerName || 'NA'} | Project: {ticket.projectName || 'NA'} | Service: {ticket.serviceTypeName}
           </Typography>
         </Box>
         <Button component={Link} to={`/tickets/${ticket.id}/edit`} variant="contained">Edit Ticket</Button>
@@ -80,7 +94,8 @@ const TicketDetailsPage = () => {
               <Typography variant="h6" gutterBottom>Description</Typography>
               <Typography sx={{ whiteSpace: 'pre-wrap' }}>{ticket.description}</Typography>
               <Typography sx={{ mt: 2 }}><strong>Remarks:</strong> {ticket.remarks || 'NA'}</Typography>
-              <Typography><strong>Resolution Notes:</strong> {ticket.resolutionNotes || 'NA'}</Typography>
+              <Typography sx={{ mt: 1 }}><strong>Parts / Items Used:</strong> {ticket.partsOrItemsUsed || 'NA'}</Typography>
+              <Typography sx={{ mt: 1 }}><strong>Resolution Notes:</strong> {ticket.resolutionNotes || 'NA'}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -88,25 +103,59 @@ const TicketDetailsPage = () => {
           <Card className="glass-panel">
             <CardContent>
               <Typography variant="h6" gutterBottom>Ticket Info</Typography>
-              <Typography><strong>Project:</strong> {ticket.projectName}</Typography>
+              <Typography><strong>Project:</strong> {ticket.projectName || 'NA'}</Typography>
               <Typography><strong>Service:</strong> {ticket.serviceTypeName}</Typography>
               <Typography><strong>Category:</strong> {ticket.categoryName}</Typography>
               <Typography><strong>Priority:</strong> {ticket.priorityName}</Typography>
               <Typography><strong>Status:</strong> {ticket.statusName}</Typography>
               <Typography><strong>Created By:</strong> {ticket.createdByName}</Typography>
               <Typography><strong>Assigned Technician:</strong> {ticket.assignedTechnicianName || 'Unassigned'}</Typography>
+              <Typography><strong>Total Amount Paid:</strong> {ticket.totalAmountPaid != null ? Number(ticket.totalAmountPaid).toFixed(2) : 'NA'}</Typography>
               <Typography><strong>Created At:</strong> {new Date(ticket.createdAt).toLocaleString()}</Typography>
               <Typography><strong>Updated At:</strong> {ticket.updatedAt ? new Date(ticket.updatedAt).toLocaleString() : 'NA'}</Typography>
               <Typography><strong>Closed At:</strong> {ticket.closedAt ? new Date(ticket.closedAt).toLocaleString() : 'NA'}</Typography>
-              {ticket.hasPhoto ? (
-                <Button variant="outlined" size="small" startIcon={<VisibilityOutlinedIcon />} sx={{ mt: 2 }} onClick={handleViewPhoto}>
-                  View Photo
-                </Button>
-              ) : null}
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+
+      {ticketPhotos.length ? (
+        <Card className="glass-panel">
+          <CardContent>
+            <Typography variant="h6" gutterBottom>Photos</Typography>
+            <Stack spacing={1.25}>
+              {ticketPhotos.map((photo, index) => (
+                <Stack
+                  key={`${photo.id ?? 'legacy'}-${index}`}
+                  direction={{ xs: 'column', sm: 'row' }}
+                  alignItems={{ xs: 'stretch', sm: 'center' }}
+                  justifyContent="space-between"
+                  spacing={1}
+                  sx={{
+                    px: 1.5,
+                    py: 1.2,
+                    borderRadius: 2.5,
+                    border: '1px solid rgba(215,227,239,0.9)',
+                    backgroundColor: 'rgba(249,252,255,0.9)'
+                  }}
+                >
+                  <Typography sx={{ minWidth: 0 }} noWrap>
+                    {photo.fileName || `Photo ${index + 1}`}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<VisibilityOutlinedIcon />}
+                    onClick={() => handleViewPhoto(photo)}
+                  >
+                    View
+                  </Button>
+                </Stack>
+              ))}
+            </Stack>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card className="glass-panel">
         <CardContent>
