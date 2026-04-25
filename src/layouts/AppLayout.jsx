@@ -192,15 +192,17 @@ const AppLayout = () => {
       >
         <Toolbar
           sx={{
-            minHeight: { xs: 128, sm: 100, md: 84 },
-            px: { xs: 1.5, md: 3.5 },
-            py: { xs: 1.25, md: 0 },
+            minHeight: { xs: 134, sm: 100, md: 84 },
+            px: { xs: 1.25, md: 3.5 },
+            py: { xs: 1, md: 0 },
+            flexDirection: { xs: 'column', md: 'row' },
             alignItems: { xs: 'stretch', md: 'center' },
-            justifyContent: 'space-between',
-            gap: { xs: 1.25, md: 2 }
+            justifyContent: { xs: 'center', md: 'space-between' },
+            gap: { xs: 1, md: 2 },
+            overflow: 'hidden'
           }}
         >
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ minWidth: 0 }}>
+          <Stack direction="row" spacing={1.25} alignItems="center" sx={{ minWidth: 0, width: { xs: '100%', md: 'auto' } }}>
             {!isDesktop && (
               <IconButton onClick={handleDrawerToggle} sx={{ color: '#145b82', flexShrink: 0 }}>
                 <MenuRoundedIcon />
@@ -216,13 +218,30 @@ const AppLayout = () => {
                 objectFit: 'contain'
               }}
             />
-            <Typography sx={{ fontSize: { xs: '1.15rem', sm: '1.4rem', md: '1.75rem' }, fontWeight: 800, letterSpacing: '-0.04em' }}>
+            <Typography
+              sx={{
+                fontSize: { xs: '1rem', sm: '1.4rem', md: '1.75rem' },
+                fontWeight: 800,
+                letterSpacing: '-0.04em',
+                lineHeight: 1.15,
+                minWidth: 0,
+                wordBreak: 'break-word'
+              }}
+            >
               Ticket Management Portal
             </Typography>
           </Stack>
 
-          <Stack direction="row" spacing={1.25} alignItems="center" justifyContent="flex-end" useFlexGap flexWrap="wrap">
-            <Card className="glass-panel" sx={{ ...headerCardSx, px: 2.2, py: 1.2, minWidth: 184, maxWidth: '100%' }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            justifyContent="flex-end"
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ width: { xs: '100%', md: 'auto' } }}
+          >
+            <Card className="glass-panel" sx={{ ...headerCardSx, px: { xs: 1.4, md: 2.2 }, py: { xs: 0.9, md: 1.2 }, minWidth: { xs: 0, md: 184 }, flex: { xs: '1 1 180px', md: '0 0 auto' }, maxWidth: '100%' }}>
               <Typography sx={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.02em' }}>
                 {auth.user?.firstName} {auth.user?.lastName}
               </Typography>
@@ -235,11 +254,12 @@ const AppLayout = () => {
               onClick={() => void auth.logout()}
               sx={{
                 minHeight: 44,
-                px: 2.4,
+                px: { xs: 2, md: 2.4 },
                 borderRadius: 3,
                 textTransform: 'none',
                 fontWeight: 700,
                 letterSpacing: '0.01em',
+                minWidth: { xs: 112, md: 0 },
                 background: 'linear-gradient(180deg, #1d6d99 0%, #145b82 100%)',
                 boxShadow: '0 14px 28px rgba(20, 91, 130, 0.2)',
                 '&:hover': {
@@ -260,11 +280,11 @@ const AppLayout = () => {
         onClose={handleDrawerClose}
         ModalProps={{ keepMounted: true }}
         sx={{
-          width: { xs: '88vw', md: drawerWidth },
+          width: { xs: '84vw', md: drawerWidth },
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
-            width: { xs: '88vw', md: drawerWidth },
-            maxWidth: { xs: 320, md: drawerWidth },
+            width: { xs: '84vw', md: drawerWidth },
+            maxWidth: { xs: 304, md: drawerWidth },
             boxSizing: 'border-box',
             background: 'linear-gradient(180deg, #0d1f33 0%, #102843 48%, #143453 100%)',
             color: '#fff',
@@ -281,8 +301,11 @@ const AppLayout = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: { xs: 2, md: 3.5 },
-          mt: { xs: '128px', sm: '100px', md: '84px' },
+          width: '100%',
+          maxWidth: '100%',
+          overflowX: 'hidden',
+          p: { xs: 1.25, sm: 2, md: 3.5 },
+          mt: { xs: '134px', sm: '100px', md: '84px' },
           background:
             'radial-gradient(circle at top left, rgba(47, 137, 184, 0.08), transparent 22%), linear-gradient(180deg, #f8fafc 0%, #f4f7fb 100%)'
         }}

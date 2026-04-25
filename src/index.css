@@ -12,6 +12,8 @@ html,
 body,
 #root {
   min-height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -21,6 +23,7 @@ body {
     linear-gradient(180deg, #f9fbfe 0%, #eef4f9 100%);
   color: var(--ink-900);
   font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  overflow-x: hidden;
 }
 
 a {
@@ -47,6 +50,7 @@ a {
   font-size: clamp(2.1rem, 2.8vw, 2.9rem);
   font-weight: 800;
   letter-spacing: -0.04em;
+  word-break: break-word;
 }
 
 .page-subtitle {
@@ -59,4 +63,8 @@ a {
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 18px 40px rgba(16, 35, 58, 0.08);
   backdrop-filter: blur(12px);
+}
+
+* {
+  box-sizing: border-box;
 }

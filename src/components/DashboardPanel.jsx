@@ -163,16 +163,19 @@ const metricTileSx = (item) => ({
   '--metric-accent': item.accent,
   '--metric-glow': item.tint,
   position: 'relative',
-  minHeight: 68,
+  minHeight: { xs: 58, sm: 64, md: 68 },
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: { xs: 'flex-start', sm: 'center' },
+  width: '100%',
+  minWidth: 0,
+  maxWidth: '100%',
   borderRadius: 2.5,
   border: '1px solid rgba(215,227,239,0.9)',
   background: '#ffffff',
   boxShadow: '0 8px 20px rgba(16, 35, 58, 0.05)',
-  px: 1.25,
-  py: 0.85,
+  px: { xs: 1.35, sm: 1.25 },
+  py: { xs: 0.8, sm: 0.85 },
   overflow: 'hidden',
   transition: 'transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease, background-color 160ms ease',
   '&:hover': {
@@ -205,7 +208,8 @@ const metricTileSx = (item) => ({
     width: 24,
     height: 24,
     borderRadius: 8,
-    background: item.tint
+    background: item.tint,
+    display: { xs: 'none', sm: 'block' }
   }
 });
 
@@ -279,7 +283,8 @@ const chartShellSx = {
   p: { xs: 1.2, md: 1.4 },
   borderRadius: 3,
   border: '1px solid rgba(226, 234, 243, 0.95)',
-  background: 'linear-gradient(180deg, rgba(249,252,255,0.9), rgba(255,255,255,0.98))'
+  background: 'linear-gradient(180deg, rgba(249,252,255,0.9), rgba(255,255,255,0.98))',
+  minWidth: 0
 };
 
 const donutWrapSx = {
@@ -307,7 +312,7 @@ const donutCenterSx = {
 
 const chartLegendRowSx = (color) => ({
   display: 'grid',
-  gridTemplateColumns: 'auto 1fr auto auto',
+  gridTemplateColumns: { xs: 'auto 1fr auto', sm: 'auto 1fr auto auto' },
   alignItems: 'center',
   gap: 1,
   px: 1.2,
@@ -395,7 +400,7 @@ const TrendAnalyticsCard = ({ title, items }) => (
 );
 
 const DashboardPanel = ({ title, subtitle, actions, quickActions, quickActionsTitle = 'Quick Actions', data }) => (
-  <Stack spacing={{ xs: 2.5, md: 3 }}>
+  <Stack spacing={{ xs: 2.5, md: 3 }} sx={{ width: '100%', minWidth: 0, maxWidth: '100%', overflowX: 'clip' }}>
     <Card className="glass-panel" sx={heroCardSx}>
       <CardContent sx={{ p: { xs: 2.25, md: 3 }, '&:last-child': { pb: { xs: 2.25, md: 3 } }, position: 'relative' }}>
         <Box
@@ -404,16 +409,18 @@ const DashboardPanel = ({ title, subtitle, actions, quickActions, quickActionsTi
             flexDirection: { xs: 'column', xl: 'row' },
             alignItems: { xs: 'flex-start', xl: 'center' },
             justifyContent: 'space-between',
-            gap: 2.5
+            gap: 2.5,
+            minWidth: 0
           }}
         >
-          <Box sx={{ maxWidth: 760 }}>
+          <Box sx={{ maxWidth: 760, minWidth: 0, width: '100%' }}>
             <Typography
               sx={{
-                fontSize: { xs: '1.8rem', md: '2.15rem' },
+                fontSize: { xs: '1.45rem', sm: '1.7rem', md: '2.15rem' },
                 fontWeight: 800,
                 letterSpacing: '-0.04em',
-                lineHeight: 1.1
+                lineHeight: 1.1,
+                wordBreak: 'break-word'
               }}
             >
               {title}
@@ -423,21 +430,30 @@ const DashboardPanel = ({ title, subtitle, actions, quickActions, quickActionsTi
                 mt: 1,
                 maxWidth: 760,
                 color: '#526173',
-                fontSize: { xs: '0.98rem', md: '1.02rem' },
+                fontSize: { xs: '0.92rem', md: '1.02rem' },
                 lineHeight: 1.65
               }}
             >
               {subtitle}
             </Typography>
           </Box>
-          <Stack direction="row" spacing={1.25} useFlexGap flexWrap="wrap">
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={1.25}
+            useFlexGap
+            flexWrap="wrap"
+            sx={{ width: { xs: '100%', xl: 'auto' } }}
+          >
             {actions?.map((action) => (
               <Button
                 key={action.label}
                 component={action.component}
                 to={action.to}
                 variant={action.variant || 'contained'}
-                sx={actionButtonSx(action.variant || 'contained')}
+                sx={{
+                  ...actionButtonSx(action.variant || 'contained'),
+                  width: { xs: '100%', sm: 'auto' }
+                }}
               >
                 {action.label}
               </Button>
@@ -455,21 +471,26 @@ const DashboardPanel = ({ title, subtitle, actions, quickActions, quickActionsTi
           sm: 'repeat(2, minmax(0, 1fr))',
           md: 'repeat(4, minmax(0, 1fr))'
         },
-        gap: 1.25
+        gap: 1.25,
+        width: '100%',
+        minWidth: 0
       }}
     >
       {statItems(data.summary).map((item) => (
         <Box key={item.label} sx={metricTileSx(item)}>
-          <Box sx={{ width: '100%', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          <Box sx={{ width: '100%', textAlign: { xs: 'left', sm: 'center' }, position: 'relative', zIndex: 1, minWidth: 0, pr: { xs: 3.5, sm: 0 } }}>
             <Typography
               className="metric-label"
               sx={{
-                fontSize: '0.64rem',
+                fontSize: { xs: '0.6rem', sm: '0.64rem' },
                 fontWeight: 800,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: '#6b7b8d',
-                transition: 'color 160ms ease'
+                transition: 'color 160ms ease',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
               {item.label}
@@ -478,7 +499,7 @@ const DashboardPanel = ({ title, subtitle, actions, quickActions, quickActionsTi
               className="metric-value"
               sx={{
                 mt: 0.45,
-                fontSize: { xs: '1.55rem', md: '1.72rem' },
+                fontSize: { xs: '1.35rem', sm: '1.5rem', md: '1.72rem' },
                 fontWeight: 900,
                 letterSpacing: '-0.05em',
                 lineHeight: 1,
@@ -499,7 +520,7 @@ const DashboardPanel = ({ title, subtitle, actions, quickActions, quickActionsTi
               height: 22,
               borderRadius: '50%',
               background: '#ffffff',
-              display: 'grid',
+              display: { xs: 'none', sm: 'grid' },
               placeItems: 'center',
               boxShadow: '0 4px 10px rgba(16, 35, 58, 0.05)'
             }}
@@ -530,7 +551,8 @@ const DashboardPanel = ({ title, subtitle, actions, quickActions, quickActionsTi
                 xs: 'repeat(1, minmax(0, 1fr))',
                 md: 'repeat(3, minmax(0, 1fr))'
               },
-              gap: 1.5
+              gap: 1.5,
+              minWidth: 0
             }}
           >
             {quickActions.map((action) => (
@@ -539,8 +561,8 @@ const DashboardPanel = ({ title, subtitle, actions, quickActions, quickActionsTi
                   component={action.component}
                   to={action.to}
                   sx={{
-                    px: 2.1,
-                    py: 1.8,
+                    px: { xs: 1.6, md: 2.1 },
+                    py: { xs: 1.5, md: 1.8 },
                     height: '100%',
                     display: 'flex',
                     alignItems: 'flex-start',
