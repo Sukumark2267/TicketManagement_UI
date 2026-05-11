@@ -24,11 +24,14 @@ import ChangePasswordPage from '../pages/auth/ChangePasswordPage';
 import AdminDashboardPage from '../pages/dashboard/AdminDashboardPage';
 import CustomerDashboardPage from '../pages/dashboard/CustomerDashboardPage';
 import TechnicianDashboardPage from '../pages/dashboard/TechnicianDashboardPage';
+import ActivityTypeMasterPage from '../pages/masters/ActivityTypeMasterPage';
 import CategoryMasterPage from '../pages/masters/CategoryMasterPage';
 import PriorityMasterPage from '../pages/masters/PriorityMasterPage';
 import ServiceTypeMasterPage from '../pages/masters/ServiceTypeMasterPage';
 import StatusMasterPage from '../pages/masters/StatusMasterPage';
 import CreateProjectPage from '../pages/projects/CreateProjectPage';
+import EditProjectPage from '../pages/projects/EditProjectPage';
+import ProjectDetailsPage from '../pages/projects/ProjectDetailsPage';
 import ProjectListPage from '../pages/projects/ProjectListPage';
 import TicketCreatePage from '../pages/tickets/TicketCreatePage';
 import TicketDetailsPage from '../pages/tickets/TicketDetailsPage';
@@ -38,7 +41,11 @@ import TicketOnBehalfPage from '../pages/tickets/TicketOnBehalfPage';
 import CreateCustomerPage from '../pages/users/CreateCustomerPage';
 import CreateTechnicianPage from '../pages/users/CreateTechnicianPage';
 import CustomerListPage from '../pages/users/CustomerListPage';
+import CustomerDetailsPage from '../pages/users/CustomerDetailsPage';
+import EditCustomerPage from '../pages/users/EditCustomerPage';
+import EditTechnicianPage from '../pages/users/EditTechnicianPage';
 import TechnicianListPage from '../pages/users/TechnicianListPage';
+import TechnicianDetailsPage from '../pages/users/TechnicianDetailsPage';
 
 const drawerWidth = 280;
 
@@ -65,10 +72,11 @@ const AppLayout = () => {
     if (auth.user?.role !== 'Customer') {
       baseItems.push({ label: 'Assigned To Me', to: '/tickets/assigned' });
       baseItems.push({ label: 'Create Ticket', to: '/tickets/on-behalf' });
-      baseItems.push({ label: 'Projects', to: '/projects' });
     } else {
       baseItems.push({ label: 'Create Ticket', to: '/tickets/create' });
     }
+
+    baseItems.push({ label: 'Projects', to: '/projects' });
 
     if (auth.user?.role === 'Admin') {
       baseItems.unshift({ label: 'Admin Dashboard', to: '/dashboard/admin' });
@@ -76,6 +84,7 @@ const AppLayout = () => {
         { label: 'Customers', to: '/users/customers' },
         { label: 'Technicians', to: '/users/technicians' },
         { label: 'Service Types', to: '/masters/service-types' },
+        { label: 'Activities', to: '/masters/activity-types' },
         { label: 'Categories', to: '/masters/categories' },
         { label: 'Priorities', to: '/masters/priorities' },
         { label: 'Statuses', to: '/masters/statuses' }
@@ -98,6 +107,11 @@ const AppLayout = () => {
   const handleDrawerClose = () => {
     setMobileDrawerOpen(false);
   };
+
+  const displayName =
+    auth.user?.firstName === 'System' && auth.user?.lastName === 'Admin'
+      ? 'Admin'
+      : `${auth.user?.firstName ?? ''} ${auth.user?.lastName ?? ''}`.trim();
 
   const drawerContent = (
     <>
@@ -243,7 +257,7 @@ const AppLayout = () => {
           >
             <Card className="glass-panel" sx={{ ...headerCardSx, px: { xs: 1.4, md: 2.2 }, py: { xs: 0.9, md: 1.2 }, minWidth: { xs: 0, md: 184 }, flex: { xs: '1 1 180px', md: '0 0 auto' }, maxWidth: '100%' }}>
               <Typography sx={{ fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.02em' }}>
-                {auth.user?.firstName} {auth.user?.lastName}
+                {displayName}
               </Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
                 {auth.user?.role}
@@ -323,13 +337,20 @@ const AppLayout = () => {
           <Route path="/tickets/on-behalf" element={<ProtectedRoute roles={['Admin', 'Technician']}><TicketOnBehalfPage /></ProtectedRoute>} />
           <Route path="/tickets/:id" element={<TicketDetailsPage />} />
           <Route path="/tickets/:id/edit" element={<TicketEditPage />} />
-          <Route path="/projects" element={<ProtectedRoute roles={['Admin', 'Technician']}><ProjectListPage /></ProtectedRoute>} />
+          <Route path="/projects" element={<ProjectListPage />} />
           <Route path="/projects/create" element={<ProtectedRoute roles={['Admin', 'Technician']}><CreateProjectPage /></ProtectedRoute>} />
+          <Route path="/projects/:id" element={<ProjectDetailsPage />} />
+          <Route path="/projects/:id/edit" element={<ProtectedRoute roles={['Admin']}><EditProjectPage /></ProtectedRoute>} />
           <Route path="/users/customers" element={<ProtectedRoute roles={['Admin']}><CustomerListPage /></ProtectedRoute>} />
           <Route path="/users/customers/create" element={<ProtectedRoute roles={['Admin']}><CreateCustomerPage /></ProtectedRoute>} />
+          <Route path="/users/customers/:id" element={<ProtectedRoute roles={['Admin']}><CustomerDetailsPage /></ProtectedRoute>} />
+          <Route path="/users/customers/:id/edit" element={<ProtectedRoute roles={['Admin']}><EditCustomerPage /></ProtectedRoute>} />
           <Route path="/users/technicians" element={<ProtectedRoute roles={['Admin']}><TechnicianListPage /></ProtectedRoute>} />
           <Route path="/users/technicians/create" element={<ProtectedRoute roles={['Admin']}><CreateTechnicianPage /></ProtectedRoute>} />
+          <Route path="/users/technicians/:id" element={<ProtectedRoute roles={['Admin']}><TechnicianDetailsPage /></ProtectedRoute>} />
+          <Route path="/users/technicians/:id/edit" element={<ProtectedRoute roles={['Admin']}><EditTechnicianPage /></ProtectedRoute>} />
           <Route path="/masters/service-types" element={<ProtectedRoute roles={['Admin']}><ServiceTypeMasterPage /></ProtectedRoute>} />
+          <Route path="/masters/activity-types" element={<ProtectedRoute roles={['Admin']}><ActivityTypeMasterPage /></ProtectedRoute>} />
           <Route path="/masters/categories" element={<ProtectedRoute roles={['Admin']}><CategoryMasterPage /></ProtectedRoute>} />
           <Route path="/masters/priorities" element={<ProtectedRoute roles={['Admin']}><PriorityMasterPage /></ProtectedRoute>} />
           <Route path="/masters/statuses" element={<ProtectedRoute roles={['Admin']}><StatusMasterPage /></ProtectedRoute>} />

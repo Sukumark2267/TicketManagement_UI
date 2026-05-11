@@ -8,6 +8,9 @@ const TechnicianListPage = () => (
     createTo="/users/technicians/create"
     createLabel="Create Technician"
     loadUsers={api.users.technicians}
+    viewBasePath="/users/technicians"
+    editBasePath="/users/technicians"
+    resetPassword={(user, password) => api.users.resetPassword(user.id, { password })}
     toggleStatus={(user) => user.isActive ? api.users.deactivate(user.id) : api.users.activate(user.id)}
   />
 );

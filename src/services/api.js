@@ -35,17 +35,24 @@ export const api = {
     create: async (payload) => (await httpClient.post('/customers', payload)).data,
     list: async (params) => (await httpClient.get(`/customers${buildQuery(params)}`)).data,
     byId: async (id) => (await httpClient.get(`/customers/${id}`)).data,
+    update: async (id, payload) => (await httpClient.put(`/customers/${id}`, payload)).data,
+    resetPassword: async (id, payload) => (await httpClient.put(`/customers/${id}/reset-password`, payload)).data,
     activate: async (id) => (await httpClient.put(`/customers/${id}/activate`, {})).data,
     deactivate: async (id) => (await httpClient.put(`/customers/${id}/deactivate`, {})).data
   },
   projects: {
     create: async (payload) => (await httpClient.post('/projects', payload)).data,
     list: async (params) => (await httpClient.get(`/projects${buildQuery(params)}`)).data,
-    byId: async (id) => (await httpClient.get(`/projects/${id}`)).data
+    byId: async (id) => (await httpClient.get(`/projects/${id}`)).data,
+    update: async (id, payload) => (await httpClient.put(`/projects/${id}`, payload)).data,
+    documentById: async (projectId, documentId) => (await httpClient.get(`/projects/${projectId}/documents/${documentId}`, { responseType: 'blob' })).data
   },
   users: {
     createTechnician: async (payload) => (await httpClient.post('/users/technicians', payload)).data,
     technicians: async (params) => (await httpClient.get(`/users/technicians${buildQuery(params)}`)).data,
+    byId: async (id) => (await httpClient.get(`/users/${id}`)).data,
+    update: async (id, payload) => (await httpClient.put(`/users/${id}`, payload)).data,
+    resetPassword: async (id, payload) => (await httpClient.put(`/users/${id}/reset-password`, payload)).data,
     activate: async (id) => (await httpClient.put(`/users/${id}/activate`, {})).data,
     deactivate: async (id) => (await httpClient.put(`/users/${id}/deactivate`, {})).data
   },
@@ -85,5 +92,11 @@ export const api = {
     create: async (payload) => (await httpClient.post('/service-types', payload)).data,
     update: async (id, payload) => (await httpClient.put(`/service-types/${id}`, payload)).data,
     remove: async (id) => (await httpClient.delete(`/service-types/${id}`)).data
+  },
+  activityTypes: {
+    list: async (params) => (await httpClient.get(`/activity-types${buildQuery(params)}`)).data,
+    create: async (payload) => (await httpClient.post('/activity-types', payload)).data,
+    update: async (id, payload) => (await httpClient.put(`/activity-types/${id}`, payload)).data,
+    remove: async (id) => (await httpClient.delete(`/activity-types/${id}`)).data
   }
 };

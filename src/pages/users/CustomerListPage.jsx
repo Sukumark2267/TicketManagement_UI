@@ -96,19 +96,23 @@ const CustomerListPage = () => {
                     <TableCell>{customer.companyName || 'NA'}</TableCell>
                     <TableCell>{customer.isActive ? 'Active' : 'Inactive'}</TableCell>
                     <TableCell align="right">
-                      <Button
-                        onClick={async () => {
-                          try {
-                            setError('');
-                            await (customer.isActive ? api.customers.deactivate(customer.id) : api.customers.activate(customer.id));
-                            await load();
-                          } catch (toggleError) {
-                            setError(toggleError.response?.data?.detail ?? 'Unable to update customer status.');
-                          }
-                        }}
-                      >
-                        {customer.isActive ? 'Deactivate' : 'Activate'}
-                      </Button>
+                      <Stack direction="row" justifyContent="flex-end" spacing={0.5}>
+                        <Button component={Link} to={`/users/customers/${customer.id}`}>View</Button>
+                        <Button component={Link} to={`/users/customers/${customer.id}/edit`}>Edit</Button>
+                        <Button
+                          onClick={async () => {
+                            try {
+                              setError('');
+                              await (customer.isActive ? api.customers.deactivate(customer.id) : api.customers.activate(customer.id));
+                              await load();
+                            } catch (toggleError) {
+                              setError(toggleError.response?.data?.detail ?? 'Unable to update customer status.');
+                            }
+                          }}
+                        >
+                          {customer.isActive ? 'Deactivate' : 'Activate'}
+                        </Button>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 ))}

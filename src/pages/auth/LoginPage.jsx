@@ -84,11 +84,8 @@ const LoginPage = () => {
                   py: 1
                 }}
               />
-              <Typography variant="h3" sx={{ mt: 1, mb: 2, fontWeight: 700, fontSize: { xs: '2rem', md: '3rem' } }}>
-                Welcome 
-              </Typography>
-              <Typography sx={{ lineHeight: 1.8 }}>
-                Sign in to manage tickets, customers, technicians, dashboards
+              <Typography variant="h3" sx={{ mt: 1, mb: 2, fontWeight: 700, fontSize: { xs: '1.85rem', md: '2.7rem' }, lineHeight: 1.15 }}>
+                Welcome To Supernal Ticket Management Portal
               </Typography>
             </Box>
           </Grid>

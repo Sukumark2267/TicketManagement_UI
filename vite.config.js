@@ -6,6 +6,19 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    resolve: {
+      dedupe: ['react', 'react-dom', '@emotion/react', '@emotion/styled']
+    },
+    optimizeDeps: {
+      force: true,
+      include: [
+        '@emotion/react',
+        '@emotion/styled',
+        '@mui/material',
+        '@mui/material/styles',
+        '@mui/icons-material/MenuRounded'
+      ]
+    },
     server: {
       port: 5173,
       proxy: {

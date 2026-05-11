@@ -22,11 +22,13 @@ import PageLoader from '../../components/PageLoader';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 
+const getAllowedStatuses = (items) => items.filter((item) => item.isActive && ['Open', 'In-Progress', 'Closed', 'In Progress'].includes(item.name));
+
 const TicketEditPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const auth = useAuth();
-  const [lookups, setLookups] = useState({ categories: [], priorities: [], statuses: [], serviceTypes: [], technicians: [] });
+  const [lookups, setLookups] = useState({ categories: [], priorities: [], statuses: [], serviceTypes: [], technicians: [], activityTypes: [] });
   const [ticketInfo, setTicketInfo] = useState(null);
   const [form, setForm] = useState(null);
   const [comments, setComments] = useState([]);
@@ -43,13 +45,14 @@ const TicketEditPage = () => {
       try {
         setError('');
         setSuccess('');
-        const [ticket, categories, priorities, statuses, serviceTypes, technicians] = await Promise.all([
+        const [ticket, categories, priorities, statuses, serviceTypes, technicians, activityTypes] = await Promise.all([
           api.tickets.byId(id),
           api.categories.list({ pageNumber: 1, pageSize: 100 }),
           api.priorities.list({ pageNumber: 1, pageSize: 100 }),
           api.statuses.list({ pageNumber: 1, pageSize: 100 }),
           api.serviceTypes.list({ pageNumber: 1, pageSize: 100 }),
-          isAdmin ? api.users.technicians({ pageNumber: 1, pageSize: 100 }) : Promise.resolve({ items: [] })
+          isAdmin ? api.users.technicians({ pageNumber: 1, pageSize: 100 }) : Promise.resolve({ items: [] }),
+          api.activityTypes.list({ pageNumber: 1, pageSize: 100 })
         ]);
 
         const sortedComments = [...(ticket.comments ?? [])].sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt));
@@ -60,6 +63,7 @@ const TicketEditPage = () => {
           categoryId: String(ticket.categoryId),
           priorityId: String(ticket.priorityId),
           statusId: String(ticket.statusId),
+          activityTypeId: ticket.activityTypeId ? String(ticket.activityTypeId) : '',
           assignedTechnicianId: ticket.assignedTechnicianId ? String(ticket.assignedTechnicianId) : '',
           resolutionNotes: ticket.resolutionNotes || '',
           partsOrItemsUsed: ticket.partsOrItemsUsed || '',
@@ -71,9 +75,10 @@ const TicketEditPage = () => {
         setLookups({
           categories: categories.items,
           priorities: priorities.items,
-          statuses: statuses.items,
+          statuses: getAllowedStatuses(statuses.items),
           serviceTypes: serviceTypes.items.filter((item) => item.isActive),
-          technicians: technicians.items
+          technicians: technicians.items,
+          activityTypes: activityTypes.items.filter((item) => item.isActive)
         });
       } catch (loadError) {
         setError(loadError.response?.data?.detail ?? 'Unable to load ticket for editing.');
@@ -132,6 +137,7 @@ const TicketEditPage = () => {
         categoryId: Number(form.categoryId),
         priorityId: Number(form.priorityId),
         statusId: Number(form.statusId),
+        activityTypeId: form.activityTypeId ? Number(form.activityTypeId) : null,
         assignedTechnicianId: form.assignedTechnicianId ? Number(form.assignedTechnicianId) : null,
         resolutionNotes: form.resolutionNotes,
         partsOrItemsUsed: form.partsOrItemsUsed,
@@ -147,6 +153,7 @@ const TicketEditPage = () => {
         categoryId: String(ticket.categoryId),
         priorityId: String(ticket.priorityId),
         statusId: String(ticket.statusId),
+        activityTypeId: ticket.activityTypeId ? String(ticket.activityTypeId) : '',
         assignedTechnicianId: ticket.assignedTechnicianId ? String(ticket.assignedTechnicianId) : '',
         resolutionNotes: ticket.resolutionNotes || '',
         partsOrItemsUsed: ticket.partsOrItemsUsed || '',
@@ -173,7 +180,7 @@ const TicketEditPage = () => {
   return (
     <Stack spacing={3}>
       <Box>
-        <Typography className="page-title">Edit Ticket</Typography>
+        <Typography className="page-title">Edit Ticket - {ticketInfo.ticketNumber}</Typography>
       </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -273,6 +280,17 @@ const TicketEditPage = () => {
                     </FormControl>
                   </Grid>
                 )}
+                {canManageWorkflow && (
+                  <Grid item xs={12} md={4}>
+                    <FormControl fullWidth>
+                      <InputLabel>Activity</InputLabel>
+                      <Select label="Activity" value={form.activityTypeId} onChange={handleChange('activityTypeId')}>
+                        <MenuItem value="">NA</MenuItem>
+                        {lookups.activityTypes.map((item) => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                )}
                 {isAdmin && (
                   <Grid item xs={12} md={4}>
                     <FormControl fullWidth>
@@ -324,7 +342,7 @@ const TicketEditPage = () => {
             <Divider />
 
             <Box>
-              <Typography variant="h6" gutterBottom>Activity</Typography>
+              <Typography variant="h6" gutterBottom>Comments</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                 Add a comment while updating the ticket. Recent comments are shown first.
               </Typography>
@@ -365,7 +383,7 @@ const TicketEditPage = () => {
                     <Typography sx={{ mt: 1.2, whiteSpace: 'pre-wrap' }}>{comment.comment}</Typography>
                   </Box>
                 )) : (
-                  <Typography color="text.secondary">No activity comments available.</Typography>
+                  <Typography color="text.secondary">No comments available.</Typography>
                 )}
               </Stack>
             </Box>

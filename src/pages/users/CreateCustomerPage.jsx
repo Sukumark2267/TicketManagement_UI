@@ -21,7 +21,6 @@ const initialState = {
   lastName: '',
   email: '',
   phone: '',
-  password: '',
   companyName: '',
   address: '',
   location: ''
@@ -32,7 +31,6 @@ const fieldConfig = [
   { field: 'lastName', label: 'Last Name', required: true },
   { field: 'email', label: 'Email', required: true },
   { field: 'phone', label: 'Phone', required: true },
-  { field: 'password', label: 'Password', required: true },
   { field: 'companyName', label: 'Company Name', required: false }
 ];
 
@@ -79,7 +77,7 @@ const CreateCustomerPage = () => {
                   fullWidth
                   required={required}
                   label={label}
-                  type={field === 'email' ? 'email' : field === 'password' ? 'password' : 'text'}
+                  type={field === 'email' ? 'email' : 'text'}
                   value={form[field]}
                   onChange={handleChange(field)}
                 />

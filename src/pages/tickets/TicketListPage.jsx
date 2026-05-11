@@ -26,6 +26,8 @@ import { useAuth } from '../../context/AuthContext';
 import PageLoader from '../../components/PageLoader';
 import { api } from '../../services/api';
 
+const getAllowedStatuses = (items) => items.filter((item) => item.isActive && ['Open', 'In-Progress', 'Closed', 'In Progress'].includes(item.name));
+
 const TicketListPage = ({ mode = 'all' }) => {
   const auth = useAuth();
   const [tickets, setTickets] = useState([]);
@@ -51,7 +53,7 @@ const TicketListPage = ({ mode = 'all' }) => {
         setLookups({
           categories: categories.items,
           priorities: priorities.items,
-          statuses: statuses.items,
+          statuses: getAllowedStatuses(statuses.items),
           customers: customers.items,
           technicians: technicians.items
         });

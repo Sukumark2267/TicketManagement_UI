@@ -23,11 +23,12 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 
 const OTHER_OPTION = '__other__';
+const getAllowedStatuses = (items) => items.filter((item) => item.isActive && ['Open', 'In-Progress', 'Closed', 'In Progress'].includes(item.name));
 
 const TicketOnBehalfPage = () => {
   const auth = useAuth();
   const navigate = useNavigate();
-  const [lookups, setLookups] = useState({ customers: [], projects: [], serviceTypes: [], technicians: [], categories: [], priorities: [], statuses: [] });
+  const [lookups, setLookups] = useState({ customers: [], projects: [], serviceTypes: [], technicians: [], categories: [], priorities: [], statuses: [], activityTypes: [] });
   const [form, setForm] = useState({
     customerSelection: '',
     projectSelection: '',
@@ -38,6 +39,7 @@ const TicketOnBehalfPage = () => {
     categoryId: '',
     priorityId: '',
     statusId: '1',
+    activityTypeId: '',
     title: '',
     description: '',
     remarks: '',
@@ -56,13 +58,14 @@ const TicketOnBehalfPage = () => {
     const load = async () => {
       try {
         setError('');
-        const [customers, categories, priorities, statuses, serviceTypes, technicians] = await Promise.all([
+        const [customers, categories, priorities, statuses, serviceTypes, technicians, activityTypes] = await Promise.all([
           api.customers.list({ pageNumber: 1, pageSize: 100 }),
           api.categories.list({ pageNumber: 1, pageSize: 100 }),
           api.priorities.list({ pageNumber: 1, pageSize: 100 }),
           api.statuses.list({ pageNumber: 1, pageSize: 100 }),
           api.serviceTypes.list({ pageNumber: 1, pageSize: 100 }),
-          auth.user?.role === 'Admin' ? api.users.technicians({ pageNumber: 1, pageSize: 100 }) : Promise.resolve({ items: [] })
+          auth.user?.role === 'Admin' ? api.users.technicians({ pageNumber: 1, pageSize: 100 }) : Promise.resolve({ items: [] }),
+          api.activityTypes.list({ pageNumber: 1, pageSize: 100 })
         ]);
 
         setLookups({
@@ -72,7 +75,8 @@ const TicketOnBehalfPage = () => {
           technicians: technicians.items,
           categories: categories.items,
           priorities: priorities.items,
-          statuses: statuses.items
+          statuses: getAllowedStatuses(statuses.items),
+          activityTypes: activityTypes.items.filter((item) => item.isActive)
         });
       } catch (loadError) {
         setError(loadError.response?.data?.detail ?? 'Unable to load ticket form data.');
@@ -159,6 +163,7 @@ const TicketOnBehalfPage = () => {
         categoryId: Number(form.categoryId),
         priorityId: Number(form.priorityId),
         statusId: Number(form.statusId),
+        activityTypeId: form.activityTypeId ? Number(form.activityTypeId) : null,
         totalAmountPaid: form.totalAmountPaid ? Number(form.totalAmountPaid) : null
       });
       navigate(`/tickets/${ticket.id}`);
@@ -266,6 +271,15 @@ const TicketOnBehalfPage = () => {
                 <InputLabel>Status</InputLabel>
                 <Select label="Status" value={form.statusId} onChange={handleChange('statusId')} required>
                   {lookups.statuses.map((item) => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth>
+                <InputLabel>Activity</InputLabel>
+                <Select label="Activity" value={form.activityTypeId} onChange={handleChange('activityTypeId')}>
+                  <MenuItem value="">NA</MenuItem>
+                  {lookups.activityTypes.map((item) => <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>)}
                 </Select>
               </FormControl>
             </Grid>

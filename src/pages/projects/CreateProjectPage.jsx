@@ -18,6 +18,7 @@ import {
 
 import PageLoader from '../../components/PageLoader';
 import GoogleMapsLocationField from '../../components/GoogleMapsLocationField';
+import ProjectDocumentsUploadField from '../../components/ProjectDocumentsUploadField';
 import { api } from '../../services/api';
 
 const initialState = {
@@ -28,7 +29,20 @@ const initialState = {
   location: '',
   contactPerson: '',
   contactPhone: '',
-  description: ''
+  description: '',
+  projectDetails: '',
+  startDate: '',
+  completedDate: '',
+  freeOnsiteServiceTill: '',
+  isUnderAmc: false,
+  amcStartDate: '',
+  amcEndDate: '',
+  siteUserFirstName: '',
+  siteUserLastName: '',
+  siteUserEmail: '',
+  siteUserPhone: '',
+  siteUserPassword: '',
+  documents: []
 };
 
 const CreateProjectPage = () => {
@@ -67,7 +81,13 @@ const CreateProjectPage = () => {
       setError('');
       await api.projects.create({
         ...form,
-        customerId: Number(form.customerId)
+        customerId: Number(form.customerId),
+        isUnderAmc: Boolean(form.isUnderAmc),
+        startDate: form.startDate || null,
+        completedDate: form.completedDate || null,
+        freeOnsiteServiceTill: form.freeOnsiteServiceTill || null,
+        amcStartDate: form.isUnderAmc ? form.amcStartDate || null : null,
+        amcEndDate: form.isUnderAmc ? form.amcEndDate || null : null
       });
       navigate('/projects');
     } catch (submitError) {
@@ -85,7 +105,6 @@ const CreateProjectPage = () => {
     <Stack spacing={3}>
       <Box>
         <Typography className="page-title">Create Project</Typography>
-        <Typography className="page-subtitle">Register project and site details for a customer installation location.</Typography>
       </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -125,6 +144,67 @@ const CreateProjectPage = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField fullWidth multiline minRows={4} label="Description" value={form.description} onChange={handleChange('description')} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth multiline minRows={4} label="Project Details" value={form.projectDetails} onChange={handleChange('projectDetails')} />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Site Login</Typography>
+              <Typography color="text.secondary">Create the login account for this site user.</Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth required label="Site User First Name" value={form.siteUserFirstName} onChange={handleChange('siteUserFirstName')} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth required label="Site User Last Name" value={form.siteUserLastName} onChange={handleChange('siteUserLastName')} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth required label="Site User Email" type="email" value={form.siteUserEmail} onChange={handleChange('siteUserEmail')} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth required label="Site User Phone" value={form.siteUserPhone} onChange={handleChange('siteUserPhone')} />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField fullWidth required label="Temporary Password" type="password" value={form.siteUserPassword} onChange={handleChange('siteUserPassword')} />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField fullWidth label="Start Date" type="date" InputLabelProps={{ shrink: true }} value={form.startDate} onChange={handleChange('startDate')} />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField fullWidth label="Completed Date" type="date" InputLabelProps={{ shrink: true }} value={form.completedDate} onChange={handleChange('completedDate')} />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField fullWidth label="Free Onsite Service Till" type="date" InputLabelProps={{ shrink: true }} value={form.freeOnsiteServiceTill} onChange={handleChange('freeOnsiteServiceTill')} />
+            </Grid>
+            <Grid item xs={12}>
+              <Stack direction="row" alignItems="center" spacing={1.25}>
+                <input
+                  id="is-under-amc"
+                  type="checkbox"
+                  checked={form.isUnderAmc}
+                  onChange={(event) => setForm((current) => ({ ...current, isUnderAmc: event.target.checked }))}
+                />
+                <Typography component="label" htmlFor="is-under-amc" fontWeight={600}>
+                  Is Under AMC
+                </Typography>
+              </Stack>
+            </Grid>
+            {form.isUnderAmc ? (
+              <>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="AMC Start Date" type="date" InputLabelProps={{ shrink: true }} value={form.amcStartDate} onChange={handleChange('amcStartDate')} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <TextField fullWidth label="AMC End Date" type="date" InputLabelProps={{ shrink: true }} value={form.amcEndDate} onChange={handleChange('amcEndDate')} />
+                </Grid>
+              </>
+            ) : null}
+            <Grid item xs={12}>
+              <ProjectDocumentsUploadField
+                documents={form.documents}
+                onChange={(documents) => setForm((current) => ({ ...current, documents }))}
+                onError={setError}
+              />
             </Grid>
           </Grid>
 

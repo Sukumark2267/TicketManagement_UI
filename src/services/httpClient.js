@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { authStorage } from './authService';
+import { authStorage, getLoginHashUrl } from './authService';
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? 'https://api.supernal.in/api').replace(/\/$/, '');
 
@@ -15,6 +15,11 @@ httpClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  if (!config.url?.includes('/auth/refresh-token')) {
+    authStorage.touchActivity();
+  }
+
   return config;
 });
 
@@ -49,7 +54,7 @@ httpClient.interceptors.response.use(
         return httpClient(originalRequest);
       } catch (refreshError) {
         authStorage.clear();
-        window.location.href = '/login';
+        window.location.replace(getLoginHashUrl());
         return Promise.reject(refreshError);
       }
     }

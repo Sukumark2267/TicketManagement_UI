@@ -17,10 +17,15 @@ import {
 } from '@mui/material';
 
 import AdminActionStrip from './AdminActionStrip';
+import ResetPasswordDialog from './ResetPasswordDialog';
+import { getApiErrorMessage } from '../utils/apiErrors';
 
-const UserListPage = ({ title, subtitle, createTo, createLabel, loadUsers, toggleStatus }) => {
+const UserListPage = ({ title, subtitle, createTo, createLabel, loadUsers, toggleStatus, viewBasePath, editBasePath, resetPassword }) => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
+  const [resetTarget, setResetTarget] = useState(null);
+  const [resetError, setResetError] = useState('');
+  const [resetting, setResetting] = useState(false);
   const [query, setQuery] = useState({ pageNumber: 1, pageSize: 10 });
   const [pagination, setPagination] = useState({ totalCount: 0, pageNumber: 1, pageSize: 10 });
 
@@ -78,17 +83,22 @@ const UserListPage = ({ title, subtitle, createTo, createLabel, loadUsers, toggl
                     <TableCell>{user.username}</TableCell>
                     <TableCell>{user.isActive ? 'Active' : 'Inactive'}</TableCell>
                     <TableCell align="right">
-                      <Button onClick={async () => {
-                        try {
-                          setError('');
-                          await toggleStatus(user);
-                          await load();
-                        } catch (toggleError) {
-                          setError(toggleError.response?.data?.detail ?? 'Unable to update user status.');
-                        }
-                      }}>
-                        {user.isActive ? 'Deactivate' : 'Activate'}
-                      </Button>
+                      <Stack direction="row" justifyContent="flex-end" spacing={0.5}>
+                        {viewBasePath ? <Button component={Link} to={`${viewBasePath}/${user.id}`}>View</Button> : null}
+                        {editBasePath ? <Button component={Link} to={`${editBasePath}/${user.id}/edit`}>Edit</Button> : null}
+                        {resetPassword ? <Button onClick={() => { setResetError(''); setResetTarget(user); }}>Reset Password</Button> : null}
+                        <Button onClick={async () => {
+                          try {
+                            setError('');
+                            await toggleStatus(user);
+                            await load();
+                          } catch (toggleError) {
+                            setError(toggleError.response?.data?.detail ?? 'Unable to update user status.');
+                          }
+                        }}>
+                          {user.isActive ? 'Deactivate' : 'Activate'}
+                        </Button>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -111,6 +121,35 @@ const UserListPage = ({ title, subtitle, createTo, createLabel, loadUsers, toggl
           />
         </CardContent>
       </Card>
+
+      <ResetPasswordDialog
+        open={Boolean(resetTarget)}
+        title={resetTarget ? `Reset Password - ${resetTarget.firstName} ${resetTarget.lastName}` : 'Reset Password'}
+        submitting={resetting}
+        error={resetError}
+        onClose={() => {
+          if (!resetting) {
+            setResetTarget(null);
+            setResetError('');
+          }
+        }}
+        onSubmit={async (password) => {
+          if (!resetTarget || !resetPassword) {
+            return;
+          }
+
+          try {
+            setResetting(true);
+            setResetError('');
+            await resetPassword(resetTarget, password);
+            setResetTarget(null);
+          } catch (resetPasswordError) {
+            setResetError(getApiErrorMessage(resetPasswordError, 'Unable to reset user password.'));
+          } finally {
+            setResetting(false);
+          }
+        }}
+      />
     </Stack>
   );
 };

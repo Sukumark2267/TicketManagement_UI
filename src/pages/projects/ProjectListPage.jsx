@@ -24,9 +24,11 @@ import {
 
 import PageLoader from '../../components/PageLoader';
 import AdminActionStrip from '../../components/AdminActionStrip';
+import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 
 const ProjectListPage = () => {
+  const auth = useAuth();
   const [projects, setProjects] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [filters, setFilters] = useState({ pageNumber: 1, pageSize: 10, searchTerm: '', customerId: '' });
@@ -36,6 +38,11 @@ const ProjectListPage = () => {
 
   useEffect(() => {
     const loadCustomers = async () => {
+      if (auth.user?.role === 'Customer') {
+        setCustomers([]);
+        return;
+      }
+
       try {
         const response = await api.customers.list({ pageNumber: 1, pageSize: 200 });
         setCustomers(response.items.filter((item) => item.isActive));
@@ -45,7 +52,7 @@ const ProjectListPage = () => {
     };
 
     void loadCustomers();
-  }, []);
+  }, [auth.user?.role]);
 
   useEffect(() => {
     const loadProjects = async () => {
@@ -76,6 +83,9 @@ const ProjectListPage = () => {
     setFilters((current) => ({ ...current, pageNumber: 1, [field]: event.target.value }));
   };
 
+  const canCreate = auth.user?.role === 'Admin' || auth.user?.role === 'Technician';
+  const canEdit = auth.user?.role === 'Admin';
+
   return (
     <Stack spacing={3}>
       <Box className="page-header">
@@ -83,10 +93,10 @@ const ProjectListPage = () => {
           <Typography className="page-title">Projects Dashboard</Typography>
           <Typography className="page-subtitle">Review customer project and site details across all installation locations.</Typography>
         </Box>
-        <Button component={Link} to="/projects/create" variant="contained">Create Project</Button>
+        {canCreate ? <Button component={Link} to="/projects/create" variant="contained">Create Project</Button> : null}
       </Box>
 
-      <AdminActionStrip />
+      {(auth.user?.role === 'Admin' || auth.user?.role === 'Technician') ? <AdminActionStrip /> : null}
 
       {error && <Alert severity="error">{error}</Alert>}
 
@@ -96,15 +106,17 @@ const ProjectListPage = () => {
             <Grid item xs={12} md={6}>
               <TextField fullWidth label="Search Projects" value={filters.searchTerm} onChange={handleFilter('searchTerm')} />
             </Grid>
-            <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel>Customer</InputLabel>
-                <Select label="Customer" value={filters.customerId} onChange={handleFilter('customerId')}>
-                  <MenuItem value="">All</MenuItem>
-                  {customers.map((item) => <MenuItem key={item.id} value={item.id}>{item.fullName}</MenuItem>)}
-                </Select>
-              </FormControl>
-            </Grid>
+            {auth.user?.role !== 'Customer' ? (
+              <Grid item xs={12} md={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Customer</InputLabel>
+                  <Select label="Customer" value={filters.customerId} onChange={handleFilter('customerId')}>
+                    <MenuItem value="">All</MenuItem>
+                    {customers.map((item) => <MenuItem key={item.id} value={item.id}>{item.fullName}</MenuItem>)}
+                  </Select>
+                </FormControl>
+              </Grid>
+            ) : null}
           </Grid>
         </CardContent>
       </Card>
@@ -118,21 +130,32 @@ const ProjectListPage = () => {
                   <TableRow>
                     <TableCell>Project</TableCell>
                     <TableCell>Customer</TableCell>
-                    <TableCell>Site</TableCell>
-                    <TableCell>Site Address</TableCell>
-                    <TableCell>Contact</TableCell>
-                    <TableCell>Created</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {projects.map((project) => (
-                    <TableRow key={project.id}>
+                  <TableCell>Site</TableCell>
+                  <TableCell>Site Address</TableCell>
+                  <TableCell>AMC</TableCell>
+                  <TableCell>Docs</TableCell>
+                  <TableCell>Contact</TableCell>
+                  <TableCell>Created</TableCell>
+                  <TableCell align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {projects.map((project) => (
+                  <TableRow key={project.id}>
                       <TableCell>{project.name}</TableCell>
                       <TableCell>{project.customerName}</TableCell>
                       <TableCell>{project.siteName}</TableCell>
                       <TableCell>{project.siteAddress}</TableCell>
+                      <TableCell>{project.isUnderAmc ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>{project.documentCount ?? 0}</TableCell>
                       <TableCell>{project.contactPerson || 'NA'}{project.contactPhone ? ` (${project.contactPhone})` : ''}</TableCell>
                       <TableCell>{new Date(project.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell align="right">
+                        <Stack direction="row" justifyContent="flex-end" spacing={0.5}>
+                          <Button component={Link} to={`/projects/${project.id}`}>View</Button>
+                          {canEdit ? <Button component={Link} to={`/projects/${project.id}/edit`}>Edit</Button> : null}
+                        </Stack>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
