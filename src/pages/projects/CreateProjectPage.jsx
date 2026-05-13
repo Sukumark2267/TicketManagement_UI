@@ -37,11 +37,6 @@ const initialState = {
   isUnderAmc: false,
   amcStartDate: '',
   amcEndDate: '',
-  siteUserFirstName: '',
-  siteUserLastName: '',
-  siteUserEmail: '',
-  siteUserPhone: '',
-  siteUserPassword: '',
   documents: []
 };
 
@@ -147,25 +142,6 @@ const CreateProjectPage = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField fullWidth multiline minRows={4} label="Project Details" value={form.projectDetails} onChange={handleChange('projectDetails')} />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Site Login</Typography>
-              <Typography color="text.secondary">Create the login account for this site user.</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Site User First Name" value={form.siteUserFirstName} onChange={handleChange('siteUserFirstName')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Site User Last Name" value={form.siteUserLastName} onChange={handleChange('siteUserLastName')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Site User Email" type="email" value={form.siteUserEmail} onChange={handleChange('siteUserEmail')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Site User Phone" value={form.siteUserPhone} onChange={handleChange('siteUserPhone')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Temporary Password" type="password" value={form.siteUserPassword} onChange={handleChange('siteUserPassword')} />
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField fullWidth label="Start Date" type="date" InputLabelProps={{ shrink: true }} value={form.startDate} onChange={handleChange('startDate')} />

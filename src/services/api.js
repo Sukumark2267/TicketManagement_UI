@@ -48,7 +48,9 @@ export const api = {
     documentById: async (projectId, documentId) => (await httpClient.get(`/projects/${projectId}/documents/${documentId}`, { responseType: 'blob' })).data
   },
   users: {
+    createCustomer: async (payload) => (await httpClient.post('/users/customers', payload)).data,
     createTechnician: async (payload) => (await httpClient.post('/users/technicians', payload)).data,
+    customers: async (params) => (await httpClient.get(`/users/customers${buildQuery(params)}`)).data,
     technicians: async (params) => (await httpClient.get(`/users/technicians${buildQuery(params)}`)).data,
     byId: async (id) => (await httpClient.get(`/users/${id}`)).data,
     update: async (id, payload) => (await httpClient.put(`/users/${id}`, payload)).data,

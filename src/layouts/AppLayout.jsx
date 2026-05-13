@@ -39,10 +39,13 @@ import TicketEditPage from '../pages/tickets/TicketEditPage';
 import TicketListPage from '../pages/tickets/TicketListPage';
 import TicketOnBehalfPage from '../pages/tickets/TicketOnBehalfPage';
 import CreateCustomerPage from '../pages/users/CreateCustomerPage';
+import CreateCustomerLoginPage from '../pages/users/CreateCustomerLoginPage';
 import CreateTechnicianPage from '../pages/users/CreateTechnicianPage';
 import CustomerListPage from '../pages/users/CustomerListPage';
 import CustomerDetailsPage from '../pages/users/CustomerDetailsPage';
+import CustomerLoginDetailsPage from '../pages/users/CustomerLoginDetailsPage';
 import EditCustomerPage from '../pages/users/EditCustomerPage';
+import EditCustomerLoginPage from '../pages/users/EditCustomerLoginPage';
 import EditTechnicianPage from '../pages/users/EditTechnicianPage';
 import TechnicianListPage from '../pages/users/TechnicianListPage';
 import TechnicianDetailsPage from '../pages/users/TechnicianDetailsPage';
@@ -345,6 +348,9 @@ const AppLayout = () => {
           <Route path="/users/customers/create" element={<ProtectedRoute roles={['Admin']}><CreateCustomerPage /></ProtectedRoute>} />
           <Route path="/users/customers/:id" element={<ProtectedRoute roles={['Admin']}><CustomerDetailsPage /></ProtectedRoute>} />
           <Route path="/users/customers/:id/edit" element={<ProtectedRoute roles={['Admin']}><EditCustomerPage /></ProtectedRoute>} />
+          <Route path="/users/customers/:customerId/logins/create" element={<ProtectedRoute roles={['Admin']}><CreateCustomerLoginPage /></ProtectedRoute>} />
+          <Route path="/users/customers/:customerId/logins/:userId" element={<ProtectedRoute roles={['Admin']}><CustomerLoginDetailsPage /></ProtectedRoute>} />
+          <Route path="/users/customers/:customerId/logins/:userId/edit" element={<ProtectedRoute roles={['Admin']}><EditCustomerLoginPage /></ProtectedRoute>} />
           <Route path="/users/technicians" element={<ProtectedRoute roles={['Admin']}><TechnicianListPage /></ProtectedRoute>} />
           <Route path="/users/technicians/create" element={<ProtectedRoute roles={['Admin']}><CreateTechnicianPage /></ProtectedRoute>} />
           <Route path="/users/technicians/:id" element={<ProtectedRoute roles={['Admin']}><TechnicianDetailsPage /></ProtectedRoute>} />

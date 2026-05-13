@@ -22,7 +22,7 @@ const initialState = {
   password: ''
 };
 
-const UserFormPage = ({ title, subtitle, cancelTo, submitLabel, onSubmit }) => {
+const UserFormPage = ({ title, subtitle, cancelTo, submitLabel, onSubmit, showUsername = true, mapPayload }) => {
   const navigate = useNavigate();
   const [form, setForm] = useState(initialState);
   const [submitting, setSubmitting] = useState(false);
@@ -37,7 +37,7 @@ const UserFormPage = ({ title, subtitle, cancelTo, submitLabel, onSubmit }) => {
     try {
       setSubmitting(true);
       setError('');
-      await onSubmit(form);
+      await onSubmit(mapPayload ? mapPayload(form) : form);
       navigate(cancelTo);
     } catch (submitError) {
       setError(getApiErrorMessage(submitError, 'Unable to save user.'));
@@ -45,6 +45,15 @@ const UserFormPage = ({ title, subtitle, cancelTo, submitLabel, onSubmit }) => {
       setSubmitting(false);
     }
   };
+
+  const fields = Object.entries({
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    email: 'Email',
+    phone: 'Phone',
+    ...(showUsername ? { username: 'Username' } : {}),
+    password: 'Password'
+  });
 
   return (
     <Stack spacing={3}>
@@ -58,19 +67,12 @@ const UserFormPage = ({ title, subtitle, cancelTo, submitLabel, onSubmit }) => {
       <Card className="glass-panel">
         <CardContent component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            {Object.entries({
-              firstName: 'First Name',
-              lastName: 'Last Name',
-              email: 'Email',
-              phone: 'Phone',
-              username: 'Username',
-              password: 'Password'
-            }).map(([field, label]) => (
+            {fields.map(([field, label]) => (
               <Grid item xs={12} md={6} key={field}>
                 <TextField
                   fullWidth
                   required
-                  type={field === 'password' ? 'password' : 'text'}
+                  type={field === 'password' ? 'password' : field === 'email' ? 'email' : 'text'}
                   label={label}
                   value={form[field]}
                   onChange={handleChange(field)}

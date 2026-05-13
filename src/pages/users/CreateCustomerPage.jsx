@@ -21,6 +21,7 @@ const initialState = {
   lastName: '',
   email: '',
   phone: '',
+  password: '',
   companyName: '',
   address: '',
   location: ''
@@ -31,6 +32,7 @@ const fieldConfig = [
   { field: 'lastName', label: 'Last Name', required: true },
   { field: 'email', label: 'Email', required: true },
   { field: 'phone', label: 'Phone', required: true },
+  { field: 'password', label: 'Password', required: true },
   { field: 'companyName', label: 'Company Name', required: false }
 ];
 
@@ -63,7 +65,7 @@ const CreateCustomerPage = () => {
     <Stack spacing={3}>
       <Box>
         <Typography className="page-title">Create Customer</Typography>
-        <Typography className="page-subtitle">Register a customer profile that can be selected while creating tickets.</Typography>
+        <Typography className="page-subtitle">Register the customer company and create its primary login.</Typography>
       </Box>
 
       {error && <Alert severity="error">{error}</Alert>}
@@ -77,7 +79,7 @@ const CreateCustomerPage = () => {
                   fullWidth
                   required={required}
                   label={label}
-                  type={field === 'email' ? 'email' : 'text'}
+                  type={field === 'email' ? 'email' : field === 'password' ? 'password' : 'text'}
                   value={form[field]}
                   onChange={handleChange(field)}
                 />

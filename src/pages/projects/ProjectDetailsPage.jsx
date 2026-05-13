@@ -102,9 +102,6 @@ const ProjectDetailsPage = () => {
               <Typography><strong>Site:</strong> {project.siteName}</Typography>
               <Typography><strong>Contact Person:</strong> {project.contactPerson || 'NA'}</Typography>
               <Typography><strong>Contact Phone:</strong> {project.contactPhone || 'NA'}</Typography>
-              <Typography><strong>Site User:</strong> {project.siteUserName || 'NA'}</Typography>
-              <Typography><strong>Site User Email:</strong> {project.siteUserEmail || 'NA'}</Typography>
-              <Typography><strong>Site User Phone:</strong> {project.siteUserPhone || 'NA'}</Typography>
               <Typography><strong>Start Date:</strong> {project.startDate ? new Date(project.startDate).toLocaleDateString() : 'NA'}</Typography>
               <Typography><strong>Completed Date:</strong> {project.completedDate ? new Date(project.completedDate).toLocaleDateString() : 'NA'}</Typography>
               <Typography><strong>Free Onsite Service Till:</strong> {project.freeOnsiteServiceTill ? new Date(project.freeOnsiteServiceTill).toLocaleDateString() : 'NA'}</Typography>

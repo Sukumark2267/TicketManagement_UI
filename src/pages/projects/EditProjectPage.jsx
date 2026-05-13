@@ -58,12 +58,6 @@ const EditProjectPage = () => {
           isUnderAmc: Boolean(project.isUnderAmc),
           amcStartDate: project.amcStartDate ? project.amcStartDate.slice(0, 10) : '',
           amcEndDate: project.amcEndDate ? project.amcEndDate.slice(0, 10) : '',
-          siteUserId: project.siteUserId || null,
-          siteUserFirstName: project.siteUserFirstName || '',
-          siteUserLastName: project.siteUserLastName || '',
-          siteUserEmail: project.siteUserEmail || '',
-          siteUserPhone: project.siteUserPhone || '',
-          siteUserPassword: '',
           documents: []
         });
       } catch (loadError) {
@@ -175,25 +169,6 @@ const EditProjectPage = () => {
             </Grid>
             <Grid item xs={12}>
               <TextField fullWidth multiline minRows={4} label="Project Details" value={form.projectDetails} onChange={handleChange('projectDetails')} />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Site Login</Typography>
-              <Typography color="text.secondary">Update the login details for this site user.</Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Site User First Name" value={form.siteUserFirstName} onChange={handleChange('siteUserFirstName')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Site User Last Name" value={form.siteUserLastName} onChange={handleChange('siteUserLastName')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Site User Email" type="email" value={form.siteUserEmail} onChange={handleChange('siteUserEmail')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth required label="Site User Phone" value={form.siteUserPhone} onChange={handleChange('siteUserPhone')} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <TextField fullWidth label="Reset Site User Password" type="password" value={form.siteUserPassword} onChange={handleChange('siteUserPassword')} helperText="Leave blank to keep the current password." />
             </Grid>
             <Grid item xs={12} md={4}>
               <TextField fullWidth label="Start Date" type="date" InputLabelProps={{ shrink: true }} value={form.startDate} onChange={handleChange('startDate')} />
